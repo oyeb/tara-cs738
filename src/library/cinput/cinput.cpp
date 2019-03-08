@@ -88,7 +88,7 @@ using namespace tara::helpers;
 void c2bc( const std::string& filename, const std::string& outname ) {
   // make a system call
   std::ostringstream cmd;
-  cmd << "clang-" << CLANG_VERSION
+  cmd << "clang"//-" << CLANG_VERSION
       <<" -emit-llvm -O0 -g -std=c++11 -Xclang -disable-O0-optnone"
       << " " << filename << " -o " << outname << " -c";
   // std::cerr << cmd.str() <<"\n";

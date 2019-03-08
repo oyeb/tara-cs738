@@ -270,13 +270,13 @@ void real_main(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  boost::asio::io_service io_service;
-  boost::asio::signal_set signals(io_service, SIGINT);
+  boost::asio::io_context io_context;
+  boost::asio::signal_set signals(io_context, SIGINT);
 #ifdef __unix__
   signals.add(SIGHUP);
 #endif
   signals.async_wait(handler);
-  std::thread runner = std::thread(boost::bind(&boost::asio::io_service::run, &io_service));
+  std::thread runner = std::thread(boost::bind(&boost::asio::io_context::run, &io_context));
   //runner.detach();
 
   int retval = 0;
@@ -289,7 +289,7 @@ int main(int argc, char **argv) {
     retval = 1;
   }
 
-  io_service.stop();
+  io_context.stop();
   runner.join();
   return retval;
 }

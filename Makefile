@@ -5,17 +5,18 @@ SRCDIR = $(PWD)/src
 # LLVM_VERSION=4.0.0
 # LLVM_VERSION=5.0.1
 LLVM_VERSION=6.0.0
+# LLVM_VERSION=7.0.0
 
 all : release
 
 .PHONY : release debug run clean patch test deepclean cleanz3 cleanllvm
 
 release : $(BUILDDIR)/buildr/Makefile
-	+make -C $(BUILDDIR)/buildr
+	+make -j6 -C $(BUILDDIR)/buildr
 	cp -f $(BUILDDIR)/buildr/tara tara
 
 debug : $(BUILDDIR)/buildd/Makefile
-	+make -C $(BUILDDIR)/buildd
+	+make -j6 -C $(BUILDDIR)/buildd
 	cp -f $(BUILDDIR)/buildd/tara tara
 
 $(BUILDDIR)/buildr/Makefile: $(BUILDDIR)/z3/buildr/libz3.so
@@ -82,7 +83,7 @@ $(BUILDDIR)/z3/buildr/Makefile: $(BUILDDIR)/z3/patched
 	# cd $(BUILDDIR)/z3; python scripts/mk_make.py --staticlib -b buildr
 
 $(BUILDDIR)/z3/buildr/libz3.so : $(BUILDDIR)/z3/newfiles $(BUILDDIR)/z3/buildr/Makefile
-	+make -C $(BUILDDIR)/z3/buildr
+	+make -j6 -C $(BUILDDIR)/z3/buildr
 
 $(BUILDDIR)/z3/buildr/libz3.a : $(BUILDDIR)/z3/buildr/libz3.so
 
@@ -93,7 +94,7 @@ $(BUILDDIR)/z3/buildd/Makefile: $(BUILDDIR)/z3/patched
 	# cd $(BUILDDIR)/z3; python scripts/mk_make.py --staticlib -d -b buildd
 
 $(BUILDDIR)/z3/buildd/libz3.so : $(BUILDDIR)/z3/newfiles $(BUILDDIR)/z3/buildd/Makefile
-	+make -C $(BUILDDIR)/z3/buildd
+	+make -j6 -C $(BUILDDIR)/z3/buildd
 
 
 #---------------------------------------------------------------------------
