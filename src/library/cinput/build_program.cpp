@@ -22,7 +22,6 @@
 #include <stdexcept>
 #include <z3.h>
 #include "helpers/z3interf.h"
-
 // #pragma GCC optimize ("no-rtti")
 #include "build_program.h"
 using namespace tara;
@@ -477,7 +476,10 @@ translateBlock( unsigned thr_id,
             local_map[I] = get_depends(v);
             assert( !recognized );recognized = true;
           }
-        }
+        }else if( auto bitcast = llvm::dyn_cast<llvm::BitCastInst>(I) ) {
+	  // CS738-2019 bitcasts are always safe
+	  assert( !recognized );recognized = true;
+	}
         if( !recognized ) cinput_error( "unspported cast instruction!" );
       }else if( auto load = llvm::dyn_cast<llvm::LoadInst>(I) ) {
         llvm::Value* addr = load->getOperand(0);
@@ -753,6 +755,16 @@ translateBlock( unsigned thr_id,
           // For liveness properties it may affect fairness condition. 
           if( o.print_input > 1 )
             cinput_warning( "pthread_yield ignored!!" );
+        }else if( fp->getName() == "malloc" ) {
+          // CS738-2019 project
+	  // mallocs are handled elsewhere
+          if( o.print_input > 1 )
+            cinput_warning( "malloc ignored!!" );
+        }else if( fp->getName() == "calloc" ) {
+          // CS 738 2019 project
+	  // mallocs are handled elsewhere
+          if( o.print_input > 1 )
+            cinput_warning( "calloc ignored!!" );
         }else{
           std::string fname = fp != NULL ? fp->getName() : "null";
           cinput_error( "Unknown function "  << fname << " called!");
@@ -972,7 +984,6 @@ void build_program::collect_loop_backedges() {
 
 bool build_program::runOnFunction( llvm::Function &f ) {
   collect_loop_backedges();
-
   std::string name = (std::string)f.getName();
   unsigned thread_id = p->add_thread( name );
   hb_enc::se_set prev_events, final_prev_events;

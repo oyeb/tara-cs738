@@ -23,6 +23,7 @@
 #include "helpers/z3interf.h"
 #include "api/options.h"
 #include "hb_enc/encoding.h"
+#include "hello.h"
 
 namespace tara {
   class program;
